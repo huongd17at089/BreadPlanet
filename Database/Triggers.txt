@@ -1,0 +1,29 @@
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `banh_AFTER_INSERT` AFTER INSERT ON `banh` FOR EACH ROW BEGIN
+	insert into kho values (new.MaBanh, default);
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `chitietdon_AFTER_INSERT` AFTER INSERT ON `chitietdon` FOR EACH ROW BEGIN
+	update kho
+    set kho.soluong = kho.soluong - new.soluong
+    where kho.MaBanh = new.MaBanh;
+END
+CREATE DEFINER=`root`@`localhost` TRIGGER `chitietdon_AFTER_DELETE` AFTER DELETE ON `chitietdon` FOR EACH ROW BEGIN
+	update kho
+    set kho.soluong = kho.soluong + old.soluong
+    where kho.MaBanh = old.MaBanh;
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `hoadon_BEFORE_DELETE` BEFORE DELETE ON `hoadon` FOR EACH ROW BEGIN
+delete from chitietdon where MaDon = old.MaDon;
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `nhanvien_AFTER_INSERT` AFTER INSERT ON `nhanvien` FOR EACH ROW BEGIN
+insert into taikhoan values (new.MaNV, concat( 'nhanvien' , new.MaNV));
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `nhapkho_AFTER_INSERT` AFTER INSERT ON `nhapkho` FOR EACH ROW BEGIN
+	update kho
+    set kho.soluong = kho.soluong + new.soluong
+    where kho.MaBanh = new.MaBanh;
+END
